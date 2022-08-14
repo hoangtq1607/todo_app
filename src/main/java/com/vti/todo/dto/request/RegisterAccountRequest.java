@@ -11,7 +11,7 @@ public class RegisterAccountRequest {
 
     @NotNull
     @Email
-    private String email;
+    private String email; //check ton tai trong db
 
     @NotNull
     @Size(min = 3, max = 15)
