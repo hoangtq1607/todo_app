@@ -1,5 +1,6 @@
 package com.vti.todo.dto.request;
 
+import com.vti.todo.validation.EmailNotUnique;
 import lombok.Data;
 
 import javax.validation.constraints.Email;
@@ -11,6 +12,7 @@ public class RegisterAccountRequest {
 
     @NotNull
     @Email
+    @EmailNotUnique
     private String email; //check ton tai trong db
 
     @NotNull

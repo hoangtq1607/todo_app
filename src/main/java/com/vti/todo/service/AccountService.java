@@ -33,10 +33,7 @@ public class AccountService {
     private JwtTokenProvider jwtTokenProvider;
 
     @Autowired
-    private UserDetailsService userDetailsService;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    private AuthenticationConfiguration authenticationConfiguration;
 
     public AccountEntity registerNewAccount(RegisterAccountRequest registerAccountRequest) {
         AccountEntity account = new AccountEntity();
@@ -47,31 +44,17 @@ public class AccountService {
         return account;
     }
 
-//    public JwtResponse login(LoginRequest loginRequest) {
-//        try {
-//            AuthenticationManager authenticationManager = authenticationConfiguration.getAuthenticationManager();
-//            Authentication authenticate = authenticationManager.authenticate(
-//                    new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword())
-//            );
-//            String token = jwtTokenProvider.createToken(authenticate.getName(), authenticate.getAuthorities());
-//            return new JwtResponse(token);
-//        } catch (Exception e) {
-//            return new JwtResponse();
-//        }
-//    }
-
-    public ResponseEntity<String> login(LoginRequest request) {
+    public JwtResponse login(LoginRequest loginRequest) {
         try {
-            UserDetails userDetails = userDetailsService.loadUserByUsername(request.getEmail());
-            if (passwordEncoder.matches(request.getPassword(), userDetails.getPassword())) {
-                String token = jwtTokenProvider.createToken(request.getEmail(), userDetails.getAuthorities());
-                return ResponseEntity.ok(token);
-            }
-        } catch (UsernameNotFoundException ignored) {
-
+            AuthenticationManager authenticationManager = authenticationConfiguration.getAuthenticationManager();
+            Authentication authenticate = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword())
+            );
+            String token = jwtTokenProvider.createToken(authenticate.getName(), authenticate.getAuthorities());
+            return new JwtResponse(token);
+        } catch (Exception e) {
+            return new JwtResponse();
         }
-
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 
 }

@@ -24,14 +24,15 @@ public class JwtTokenFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, FilterChain filterChain) throws ServletException, IOException {
         String token = jwtTokenProvider.resolveToken(httpServletRequest);
 
-        if (token != null && jwtTokenProvider.validateToken(token)) {
-            Authentication auth = jwtTokenProvider.getAuthentication(token);
-            SecurityContextHolder.getContext().setAuthentication(auth);
-        } else {
-            SecurityContextHolder.clearContext();
-            httpServletResponse.sendError(HttpStatus.UNAUTHORIZED.value(), "Unauthorized");
+        if (token != null) {
+            if (jwtTokenProvider.validateToken(token)) {
+                Authentication auth = jwtTokenProvider.getAuthentication(token);
+                SecurityContextHolder.getContext().setAuthentication(auth);
+            } else {
+                SecurityContextHolder.clearContext();
+                httpServletResponse.sendError(HttpStatus.UNAUTHORIZED.value(), "Unauthorized");
+            }
         }
-
 
         filterChain.doFilter(httpServletRequest, httpServletResponse);
     }
