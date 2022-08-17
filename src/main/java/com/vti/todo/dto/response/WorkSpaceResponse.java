@@ -10,4 +10,5 @@ import lombok.NoArgsConstructor;
 public class WorkSpaceResponse {
     private Integer id;
     private String workSpaceName;
+    private Long numberOfTask;
 }
