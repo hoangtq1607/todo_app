@@ -22,7 +22,6 @@ public class WorkSpaceController {
         return workSpaceService.createWorkSpace(request);
     }
 
-    //TODO Lay danh sách workspace của user hiện tại, không để user này lấy được danh sách workspace của user khác
     @GetMapping
     public List<WorkSpaceResponse> getCurrentWorkspace() {
         return workSpaceService.getCurrentWorkspace();
