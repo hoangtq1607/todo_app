@@ -29,9 +29,4 @@ public class WorkSpaceController {
         return workSpaceService.getCurrentWorkspace();
     }
 
-    @DeleteMapping
-    public void getCurrentWorkspace(@RequestParam Set<Integer> id) {
-        System.out.println(id);
-    }
-
 }
