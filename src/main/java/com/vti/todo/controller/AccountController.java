@@ -11,6 +11,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/accounts")
@@ -32,6 +33,12 @@ public class AccountController {
     @GetMapping("/principal")
     public UserDetails principal(@AuthenticationPrincipal UserDetails userDetails) {
         return userDetails;
+    }
+
+    @DeleteMapping
+    public void getCurrentWorkspace(@RequestParam Set<Integer> id) {
+        //TODO call delete account repository - hay bị lỗi constrain sql phải xoá account khồng có constrain đến bảng khác
+        System.out.println(id);
     }
 
 }
