@@ -38,7 +38,7 @@ public class AccountController {
     @DeleteMapping
     public void getCurrentWorkspace(@RequestParam Set<Integer> id) {
         //TODO call delete account repository - hay bị lỗi constrain sql phải xoá account khồng có constrain đến bảng khác
-        System.out.println(id);
+        System.out.println(id); // -> thay bằng cách gọi đến repository để delete
     }
 
 }

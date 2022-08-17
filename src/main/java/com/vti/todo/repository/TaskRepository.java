@@ -11,6 +11,6 @@ public interface TaskRepository extends JpaRepository<TaskEntity, Integer> {
 
     List<TaskEntity> findByWorkSpaceId(Integer workspaceId);
 
-    @Modifying
+    @Modifying // -> những câu thay đổi data thì thêm cái này vào
     void deleteByIdIn(List<Integer> id);
 }
