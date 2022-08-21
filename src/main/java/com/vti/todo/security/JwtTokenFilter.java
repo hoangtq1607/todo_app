@@ -12,6 +12,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.nio.file.AccessDeniedException;
 
 // We should use OncePerRequestFilter since we are doing a database call, there is no point in doing this more than once
 @AllArgsConstructor
@@ -30,7 +31,6 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(auth);
             } else {
                 SecurityContextHolder.clearContext();
-                httpServletResponse.sendError(HttpStatus.UNAUTHORIZED.value(), "Unauthorized");
             }
         }
 

@@ -29,7 +29,7 @@ public class MemberDetailsService implements UserDetailsService {
         }
 
         return User.builder()
-                .roles("USER")
+                .roles(account.getRole())
                 .username(account.getEmail())
                 .password(account.getPassword())
                 .build();

@@ -22,4 +22,10 @@ public class RegisterAccountRequest {
     @NotNull
     private String fullName;
 
+    @NotNull
+    private String role;
+
+    @NotNull
+    private Integer departmentId;
+
 }

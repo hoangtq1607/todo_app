@@ -32,7 +32,7 @@ public class SecurityConfiguration {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeHttpRequests()
-                .antMatchers(HttpMethod.POST, "/accounts/login", "/accounts/register",
+                .antMatchers(HttpMethod.POST, "/accounts/login",
                         "/accounts/forgot", "/accounts/forgot/**").permitAll()
                 .anyRequest()
                 .authenticated()

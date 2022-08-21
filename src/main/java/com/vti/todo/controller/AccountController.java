@@ -7,7 +7,10 @@ import com.vti.todo.dto.response.JwtResponse;
 import com.vti.todo.entity.AccountEntity;
 import com.vti.todo.service.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
@@ -22,8 +25,14 @@ public class AccountController {
     @Autowired
     private AccountService accountService;
 
-    @PostMapping("/register")
-    public AccountEntity registerNewAccount(@RequestBody @Valid RegisterAccountRequest registerAccountRequest) {
+    @GetMapping
+    private Page<AccountEntity> searchAccount(Integer departmentId, String role, String search, Pageable pageable) {
+        return accountService.searchAccount(departmentId, role, search, pageable);
+    }
+
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
+    @PostMapping
+    public ResponseEntity<?> registerNewAccount(@RequestBody @Valid RegisterAccountRequest registerAccountRequest) {
         return accountService.registerNewAccount(registerAccountRequest);
     }
 

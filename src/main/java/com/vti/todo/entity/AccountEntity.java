@@ -4,6 +4,7 @@ import lombok.Data;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 
 @Data
 @Entity
@@ -25,5 +26,12 @@ public class AccountEntity {
     private String fullName;
 
     private String lang;
+
+    private String role;
+
+    @ManyToOne
+    private DepartmentEntity department;
+
+    private LocalDateTime createdDate;
 
 }

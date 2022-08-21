@@ -5,31 +5,27 @@ import com.vti.todo.dto.request.RegisterAccountRequest;
 import com.vti.todo.dto.request.ResetPasswordRequest;
 import com.vti.todo.dto.response.JwtResponse;
 import com.vti.todo.entity.AccountEntity;
+import com.vti.todo.entity.DepartmentEntity;
 import com.vti.todo.entity.OtpAccount;
 import com.vti.todo.repository.AccountRepository;
+import com.vti.todo.repository.DepartmentRepository;
 import com.vti.todo.repository.OtpAccountRepository;
 import com.vti.todo.security.JwtTokenProvider;
-import org.apache.catalina.security.SecurityConfig;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Import;
 import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.http.HttpStatus;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.servlet.LocaleResolver;
 
 import javax.transaction.Transactional;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Locale;
 import java.util.Random;
 
@@ -48,15 +44,23 @@ public class AccountService {
     @Autowired
     private SendMailService sendMailService;
 
-    public AccountEntity registerNewAccount(RegisterAccountRequest registerAccountRequest) {
+    @Autowired
+    private DepartmentRepository departmentRepository;
+
+    @Transactional
+    public ResponseEntity<?> registerNewAccount(RegisterAccountRequest registerAccountRequest) {
         AccountEntity account = new AccountEntity();
         account.setEmail(registerAccountRequest.getEmail());
         account.setFullName(registerAccountRequest.getFullName());
-        account.setPassword(registerAccountRequest.getPassword());
+        account.setPassword(passwordEncoder.encode(registerAccountRequest.getPassword()));
         Locale locale = LocaleContextHolder.getLocale();
         account.setLang(locale.getLanguage());
+        account.setRole(registerAccountRequest.getRole());
+        DepartmentEntity department = departmentRepository.getReferenceById(registerAccountRequest.getDepartmentId());
+        account.setDepartment(department);
+        account.setCreatedDate(LocalDateTime.now());
         accountRepository.save(account);
-        return account;
+        return ResponseEntity.ok(account.getId());
     }
 
     public JwtResponse login(LoginRequest loginRequest) {
@@ -110,4 +114,12 @@ public class AccountService {
         }
         return ResponseEntity.badRequest().build();
     }
+
+    public Page<AccountEntity> searchAccount(Integer departmentId, String role, String search, Pageable pageable) {
+        if (search != null) {
+            search = "%" + search + "%";
+        }
+        return accountRepository.searchAccount(departmentId, role, search, pageable);
+    }
+
 }
