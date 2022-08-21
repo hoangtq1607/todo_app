@@ -2,9 +2,12 @@ package com.vti.todo.service;
 
 import com.vti.todo.dto.request.LoginRequest;
 import com.vti.todo.dto.request.RegisterAccountRequest;
+import com.vti.todo.dto.request.ResetPasswordRequest;
 import com.vti.todo.dto.response.JwtResponse;
 import com.vti.todo.entity.AccountEntity;
+import com.vti.todo.entity.OtpAccount;
 import com.vti.todo.repository.AccountRepository;
+import com.vti.todo.repository.OtpAccountRepository;
 import com.vti.todo.security.JwtTokenProvider;
 import org.apache.catalina.security.SecurityConfig;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +24,11 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
+import java.security.SecureRandom;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Random;
 
 @Service
 public class AccountService {
@@ -34,6 +41,9 @@ public class AccountService {
 
     @Autowired
     private AuthenticationConfiguration authenticationConfiguration;
+
+    @Autowired
+    private SendMailService sendMailService;
 
     public AccountEntity registerNewAccount(RegisterAccountRequest registerAccountRequest) {
         AccountEntity account = new AccountEntity();
@@ -57,4 +67,42 @@ public class AccountService {
         }
     }
 
+    @Autowired
+    OtpAccountRepository otpAccountRepository;
+
+    @Autowired
+    PasswordEncoder passwordEncoder;
+
+    public void forgotPassword(String email) {
+
+        AccountEntity account = accountRepository.findByEmail(email);
+
+        if (account != null) {
+
+            Random rd = new SecureRandom();
+            int random = rd.nextInt(999_999);// random tu 0 -> 999_999
+            String randomStr = String.format("%06d", random);
+
+            OtpAccount otp = new OtpAccount();
+            otp.setOtp(randomStr);
+            otp.setEmail(email);
+            otp.setExpire(LocalDateTime.now().plusMinutes(30));
+            otpAccountRepository.save(otp);
+
+            sendMailService.sendForgotPassword(account.getEmail(), randomStr);
+        }
+    }
+
+    @Transactional
+    public ResponseEntity<?> resetPassword(ResetPasswordRequest request) {
+        OtpAccount otp = otpAccountRepository.findByEmailAndOtp(request.getEmail(), request.getOtp());
+        if (otp != null && otp.getExpire().isAfter(LocalDateTime.now())) { //nếu otp tồn tại và chưa hết hạn (> now)
+            AccountEntity accountEntity = accountRepository.findByEmail(request.getEmail());
+            accountEntity.setPassword(passwordEncoder.encode(request.getPassword()));
+            accountRepository.save(accountEntity);
+            otpAccountRepository.delete(otp);
+            return ResponseEntity.ok().build();
+        }
+        return ResponseEntity.badRequest().build();
+    }
 }

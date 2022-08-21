@@ -32,7 +32,8 @@ public class SecurityConfiguration {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeHttpRequests()
-                .antMatchers(HttpMethod.POST, "/accounts/login", "/accounts/register").permitAll()
+                .antMatchers(HttpMethod.POST, "/accounts/login", "/accounts/register",
+                        "/accounts/forgot", "/accounts/forgot/**").permitAll()
                 .anyRequest()
                 .authenticated()
                 .and()
