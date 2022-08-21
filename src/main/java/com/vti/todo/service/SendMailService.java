@@ -4,15 +4,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
-import java.security.SecureRandom;
 import java.util.Locale;
-import java.util.Random;
 
 @Service
+@EnableScheduling
 public class SendMailService {
 
     @Autowired
@@ -43,4 +44,10 @@ public class SendMailService {
         String content = messageSource.getMessage("mail.otp.content", new Object[]{random}, Locale.forLanguageTag(lang));
         sendMessage(email, subject, content);
     }
+
+    @Scheduled(cron = "15 3 11 * * *") // 11:03:15 every days
+    public void test() {
+        System.out.println("Hello");
+    }
+
 }
