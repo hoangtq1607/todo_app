@@ -24,4 +24,6 @@ public class AccountEntity {
     @NotNull
     private String fullName;
 
+    private String lang;
+
 }

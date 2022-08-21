@@ -12,6 +12,7 @@ import com.vti.todo.security.JwtTokenProvider;
 import org.apache.catalina.security.SecurityConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -23,11 +24,13 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.servlet.LocaleResolver;
 
 import javax.transaction.Transactional;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Locale;
 import java.util.Random;
 
 @Service
@@ -50,6 +53,8 @@ public class AccountService {
         account.setEmail(registerAccountRequest.getEmail());
         account.setFullName(registerAccountRequest.getFullName());
         account.setPassword(registerAccountRequest.getPassword());
+        Locale locale = LocaleContextHolder.getLocale();
+        account.setLang(locale.getLanguage());
         accountRepository.save(account);
         return account;
     }
@@ -89,7 +94,7 @@ public class AccountService {
             otp.setExpire(LocalDateTime.now().plusMinutes(30));
             otpAccountRepository.save(otp);
 
-            sendMailService.sendForgotPassword(account.getEmail(), randomStr);
+            sendMailService.sendForgotPassword(account.getEmail(), randomStr, account.getLang());
         }
     }
 

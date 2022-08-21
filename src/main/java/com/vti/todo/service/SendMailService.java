@@ -38,9 +38,9 @@ public class SendMailService {
 
     }
 
-    public void sendForgotPassword(String email, String random) {
-        String subject = messageSource.getMessage("mail.otp.subject", null, Locale.getDefault());
-        String content = messageSource.getMessage("mail.otp.content", new Object[]{random}, Locale.getDefault());
+    public void sendForgotPassword(String email, String random, String lang) {
+        String subject = messageSource.getMessage("mail.otp.subject", null, Locale.forLanguageTag(lang));
+        String content = messageSource.getMessage("mail.otp.content", new Object[]{random}, Locale.forLanguageTag(lang));
         sendMessage(email, subject, content);
     }
 }
